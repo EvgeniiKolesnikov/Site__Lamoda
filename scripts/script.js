@@ -52,7 +52,7 @@ cartOverlay.addEventListener('click', e => {
   }
 });
 
-subheaderCart.addEventListener('keyup', e => {
+subheaderCart.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     cartModalClose();
     enableScroll();
