@@ -1,9 +1,13 @@
 'use strict';
 
 export class CardGood {
-  constructor(getGoodsService) {
+  storageKey = 'cart-lamoda';
+
+  constructor(getGoodsService, storage) {
     console.log('CardGood');
     this.getGoodsService = getGoodsService;
+    this.storage = storage;
+
     this.cardGood = document.querySelector('.card-good');
     this.hash = location.hash.substring(1);
     this.load();
@@ -31,7 +35,9 @@ export class CardGood {
         data.reduce((html, item, i) => html + 
         `<li class="card-good__select-item" data-id="${i}">${item}</li>`, '');
 
-      const renderCardGood = ([{brand, name, cost, color, sizes, photo}]) => {
+      const renderCardGood = ([{brand, name, cost, color, sizes, id, photo}]) => {
+        const data = {brand, name, cost, id};
+
         cardGoodImage.src = `goods-image/${photo}`;
         cardGoodImage.alt = `${brand} ${name}`;
         cardGoodBrand.textContent = brand;
@@ -51,6 +57,32 @@ export class CardGood {
         } else {
           cardGoodSizes.style.display = 'none';
         }
+        
+        // Push item in a basket
+        if (this.storage.get(`${this.storageKey}`).some(item => item.id === id)) {
+          cardGoodBuy.classList.add('delete');
+          cardGoodBuy.textContent = 'Удалить из корзины';
+        }
+
+        // Push item in a basket
+        cardGoodBuy.addEventListener('click', () => {
+          if (cardGoodBuy.classList.contains('delete')) {
+            this.deleteItemCart(id);
+            cardGoodBuy.classList.remove('delete');
+            cardGoodBuy.textContent = 'Добавить в корзину';
+            return;
+          }
+
+          if (color) data.color = cardGoodColor.textContent;
+          if (sizes) data.size = cardGoodSizes.textContent;
+
+          cardGoodBuy.classList.add('delete');
+          cardGoodBuy.textContent = 'Удалить из корзины';
+
+          const cardData = this.storage.get(`${this.storageKey}`);
+          cardData.push(data);
+          this.storage.set(`${this.storageKey}`, cardData);
+        });
       };
 
       cardGoodSelectWrapper.forEach(item => {
@@ -74,4 +106,11 @@ export class CardGood {
       console.warn(error);
     }
   }
+
+  deleteItemCart = id => {
+    const cartItems = this.storage.get(`${this.storageKey}`);
+    const newCartItems = cartItems.filter(item => item.id !== id);
+    this.storage.set(`${this.storageKey}`, newCartItems);
+  }
+
 }
