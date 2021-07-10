@@ -3,9 +3,10 @@
 export class CartModal {
   storageKey = 'cart-lamoda';
 
-  constructor(storage) {
+  constructor(storage, updateCountCart) {
     console.log('cartModal');
     this.storage = storage;
+    this.updateCountCart = updateCountCart;
 
     this.cartListGoods = document.querySelector('.cart__list-goods');
     this.cartTotalCost = document.querySelector('.cart__total-cost');
@@ -36,6 +37,8 @@ export class CartModal {
         this.renderCart();
       }
     })
+
+    this.updateCountCart.updateCountCart();
   }
 
   renderCart() {
@@ -65,6 +68,7 @@ export class CartModal {
     const cartItems = this.storage.get(`${this.storageKey}`);
     const newCartItems = cartItems.filter(item => item.id !== id);
     this.storage.set(`${this.storageKey}`, newCartItems);
+    this.updateCountCart.updateCountCart();
   }
 
   cartModalOpen() {
@@ -98,4 +102,5 @@ export class CartModal {
     })
     return this;
   }
+
 }

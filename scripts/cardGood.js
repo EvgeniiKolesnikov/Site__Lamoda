@@ -3,10 +3,11 @@
 export class CardGood {
   storageKey = 'cart-lamoda';
 
-  constructor(getGoodsService, storage) {
+  constructor(getGoodsService, storage, updateCountCart) {
     console.log('CardGood');
     this.getGoodsService = getGoodsService;
     this.storage = storage;
+    this.updateCountCart = updateCountCart;
 
     this.cardGood = document.querySelector('.card-good');
     this.hash = location.hash.substring(1);
@@ -82,6 +83,7 @@ export class CardGood {
           const cardData = this.storage.get(`${this.storageKey}`);
           cardData.push(data);
           this.storage.set(`${this.storageKey}`, cardData);
+          this.updateCountCart.updateCountCart();
         });
       };
 
@@ -111,6 +113,7 @@ export class CardGood {
     const cartItems = this.storage.get(`${this.storageKey}`);
     const newCartItems = cartItems.filter(item => item.id !== id);
     this.storage.set(`${this.storageKey}`, newCartItems);
+    this.updateCountCart.updateCountCart();
   }
 
 }
